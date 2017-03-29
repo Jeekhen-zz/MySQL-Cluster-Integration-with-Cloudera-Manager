@@ -3,14 +3,13 @@
 ```
 * Require EPEL for rhel
 http://download.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm   
-
-* Remember to off Firewalld
-
-* Can run 'netstat ntlp' to check ports
+* Remember to off Firewalld and SELinux
+(If SELinux not turn off. mysqld will have problem starting.)
+* Can run 'netstat ntlp' to check ports if ports are opened
+* Remember to turn off your computer Firewall if you are testing on VM on your own machine
 
 Things you need to install:
 (ServerNode)
-Perl-Data-Dumper
 Shared Libs
 Cluster-Server
 
@@ -24,7 +23,7 @@ Perl-Data-Dumper
 Shared Libs
 Cluster-Server
 
-
+Setup yum repository for RHEL CD and RHEL EPEL package. Google has plenty of instruction to do this.
 
 Commands are as below:
 yum remove mariadb-libs
@@ -39,8 +38,7 @@ wget 192.168.52.142/mysql_cluster/mysql-cluster-community-data-node-7.5.5-1.el7.
 
 
 
-yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm 
-yum install mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
+yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
 
 For Server nodes:
 yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
@@ -56,11 +54,18 @@ Create/Modify 2 configuration file (Refer to below):
 1) /root/mycluster/config.ini (This is for your ndb manager only)
 2) /etc/my.cnf (this are for your data nodes)
 
-cd /usr/bin
-ndb-mgmd -f mycluster/config.ini 
+ndb_mgmd -f mycluster/config.ini --initial
+ndb_mgm
+ndb_mgm> show
+
+ndbd
+
+systemctl start mysqld
 
 
 
+yum remove mysql-cluster-community-client.x86_64 mysql-cluster-community-server.x86_64
+yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
 ```
 
 ## my.cnf
@@ -100,3 +105,9 @@ hostname=192.168.52.140
 [mysqld]
 hostname=192.168.52.141
 ```
+
+## Common Problem
+```
+Can't open the mysql.plugin table.
+```
+
