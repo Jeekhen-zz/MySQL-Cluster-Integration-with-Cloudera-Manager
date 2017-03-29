@@ -63,7 +63,7 @@ ndb-mgmd -f mycluster/config.ini
 
 ```
 
-# my.cnf
+## my.cnf
 ```
 [mysqld]
 ndbcluster
@@ -74,7 +74,7 @@ ndb-connectstring=192.168.52.140
 
 ```
 
-** # mycluster/config.ini **
+## mycluster/config.ini
 ```
 [ndb_mgmd]
 hostname=192.168.52.140
