@@ -1,6 +1,6 @@
 # MySQL-Cluster-Integration-with-Cloudera-Manager
 
-'''
+```
 * Require EPEL for rhel
 http://download.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm   
 
@@ -61,10 +61,10 @@ ndb-mgmd -f mycluster/config.ini
 
 
 
-'''
+```
 
 my.cnf
-'''
+```
 [mysqld]
 ndbcluster
 default-storage-engine=NDBCLUSTER
@@ -72,10 +72,10 @@ default-storage-engine=NDBCLUSTER
 [mysql_cluster]
 ndb-connectstring=192.168.52.140
 
-'''
+```
 
 mycluster/config.ini
-'''
+```
 [ndb_mgmd]
 hostname=192.168.52.140
 datadir=/root/mycluster
@@ -99,4 +99,4 @@ hostname=192.168.52.140
 
 [mysqld]
 hostname=192.168.52.141
-'''
+```
