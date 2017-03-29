@@ -63,7 +63,7 @@ ndb-mgmd -f mycluster/config.ini
 
 ```
 
-** # my.cnf **
+# my.cnf
 ```
 [mysqld]
 ndbcluster
