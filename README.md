@@ -70,6 +70,19 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
 
 ```
 
+## Testing 
+```
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'MyNewPass4!' WITH GRANT OPTION;
+**** (My sure to run grant privileges to all server(mysqld) nodes)
+
+CREATE DATABASE cluster;
+USE cluster;
+CREATE TABLE cluster_test (name VARCHAR(20), value VARCHAR(20)) ENGINE=ndbcluster;
+INSERT INTO cluster_test (name,value) VALUES('some_name','some_value');
+SELECT * FROM cluster_test;
+```
+
+
 ## my.cnf
 ```
 [mysqld]
