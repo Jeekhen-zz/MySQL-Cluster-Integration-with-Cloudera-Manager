@@ -26,29 +26,31 @@ Cluster-Server
 Setup yum repository for RHEL CD and RHEL EPEL package. Google has plenty of instruction to do this.
 
 Commands are as below:
-yum remove mariadb-libs
+sudo yum remove mariadb-libs
 
 Download MySQL-Cluster from the web
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-management-server-7.5.5-1.el7.x86_64.rpm
-wget 192.168.52.142/mysql_cluster/mysql-cluster-community-data-node-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-management-server-7.5.5-1.el7.x86_64.rpm
+wget repo.local/mysql_cluster/mysql-cluster-community-data-node-7.5.5-1.el7.x86_64.rpm
+* repo.local is my hostname for my VM hosting the repo
 
 
-
-yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
+sudo yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
 
 For Server nodes:
-yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
-yum install mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
+sudo yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
+sudo yum install mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
 
 For Data Nodes:
-yum install mysql-cluster-community-data-node-7.5.5-1.el7.x86_64.rpm
+sudo yum install mysql-cluster-community-data-node-7.5.5-1.el7.x86_64.rpm
+mkdir mycluster-data
 
 For Mgt Nodes:
-yum install mysql-cluster-community-management-server-7.5.5-1.el7.x86_64.rpm
+sudo yum install mysql-cluster-community-management-server-7.5.5-1.el7.x86_64.rpm
+mkdir mycluster
 
 Create/Modify 2 configuration file (Refer to below):
 1) /root/mycluster/config.ini (This is for your ndb manager only)
@@ -62,10 +64,10 @@ ndbd
 
 systemctl start mysqld
 
+cat /var/log/mysqld.log | grep password
+mysql -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
 
-
-yum remove mysql-cluster-community-client.x86_64 mysql-cluster-community-server.x86_64
-yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
 ```
 
 ## my.cnf
@@ -73,16 +75,16 @@ yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm mysql-cluster-
 [mysqld]
 ndbcluster
 default-storage-engine=NDBCLUSTER
+log-error=/var/log/mysqld.log
 
 [mysql_cluster]
-ndb-connectstring=192.168.52.140
-
+ndb-connectstring=mysqlmgmt
 ```
 
 ## mycluster/config.ini
 ```
 [ndb_mgmd]
-hostname=192.168.52.140
+hostname=mysqlmgmt.local
 datadir=/root/mycluster
 
 [ndbd default]
@@ -92,18 +94,18 @@ IndexMemory=10M
 ServerPort=2202
 
 [ndbd]
-hostname=192.168.52.140
+hostname=mysql1.local
 datadir=/root/mycluster-data
 
 [ndbd]
-hostname=192.168.52.141
-datadir=/root/mycluster-data2
+hostname=mysql2.local
+datadir=/root/mycluster-data
 
 [mysqld]
-hostname=192.168.52.140
+hostname=mysql1.local
 
 [mysqld]
-hostname=192.168.52.141
+hostname=mysql2.local
 ```
 
 ## Common Problem
@@ -111,3 +113,34 @@ hostname=192.168.52.141
 Can't open the mysql.plugin table.
 ```
 
+## Pre OS setup
+```
+systemctl stop firewalld
+systemctl disable firewalld
+vi /etc/selinux/config 
+```
+
+## To remove mysql Cluster cleanly
+```
+yum list | grep mysql-cluster
+yum remove <accordingly>
+
+mysql-cluster-community-client.x86_64
+mysql-cluster-community-common.x86_64
+mysql-cluster-community-data-node.x86_64
+mysql-cluster-community-libs.x86_64
+mysql-cluster-community-server.x86_64
+
+rm -rf /var/lib/mysql
+rm -rf mycluster-data/
+mkdir mycluster-data
+find / -name mysql
+```
+
+## For personal use only. 
+```
+yum remove mysql-cluster-community-client.x86_64 mysql-cluster-community-common.x86_64 mysql-cluster-community-data-node.x86_64 mysql-cluster-community-libs.x86_64 mysql-cluster-community-server.x86_64
+
+yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-data-node-7.5.5-1.el7.x86_64.rpm
+
+```
