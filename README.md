@@ -40,6 +40,26 @@ wget repo.local/mysql_cluster/mysql-cluster-community-data-node-7.5.5-1.el7.x86_
 
 sudo yum install mysql-cluster-community-common-7.5.5-1.el7.x86_64.rpm mysql-cluster-community-libs-7.5.5-1.el7.x86_64.rpm
 
+------------------------------------
+*if encounter following error, uninstall mariadb-libs and rerun yum install. Refer above for command.
+
+Error: Package: 2:postfix-2.10.1-6.el7.x86_64 (@anaconda/7.2)
+           Requires: libmysqlclient.so.18()(64bit)
+           Removing: 1:mariadb-libs-5.5.44-2.el7.x86_64 (@anaconda/7.2)
+               libmysqlclient.so.18()(64bit)
+           Obsoleted By: mysql-cluster-community-libs-7.5.5-1.el7.x86_64 (/mysql-cluster-community-libs-7.5.5-1.el7.x86_64)
+              ~libmysqlclient.so.20()(64bit)
+Error: Package: 2:postfix-2.10.1-6.el7.x86_64 (@anaconda/7.2)
+           Requires: libmysqlclient.so.18(libmysqlclient_18)(64bit)
+           Removing: 1:mariadb-libs-5.5.44-2.el7.x86_64 (@anaconda/7.2)
+               libmysqlclient.so.18(libmysqlclient_18)(64bit)
+           Obsoleted By: mysql-cluster-community-libs-7.5.5-1.el7.x86_64 (/mysql-cluster-community-libs-7.5.5-1.el7.x86_64)
+               Not found
+			   
+------------------------------------
+
+* If any of the installation flag error looking for perl(MethodMaker). Make sure yum is connectde to a working epel(Extra Package) repo. This is not in your standard RHEL ISO. Need to download.		   
+			   
 For Server nodes:
 sudo yum install mysql-cluster-community-client-7.5.5-1.el7.x86_64.rpm
 sudo yum install mysql-cluster-community-server-7.5.5-1.el7.x86_64.rpm
